@@ -1,6 +1,6 @@
 displayName: Container Manager for Traefik
 type: middleware
-import: github.com/adyanth/traefik-docker-manager
+import: github.com/adyanth/traefik-container-manager
 summary: 'Traefik plugin to start/stop containers as needed'
 testData:
   serviceUrl: http://manager:10000

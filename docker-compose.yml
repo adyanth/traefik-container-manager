@@ -9,7 +9,7 @@ services:
     volumes:
       - './traefik_dev.yml:/etc/traefik/traefik-template.yml'
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - '.:/plugins/go/src/git.adyanth.site/adyanth/traefik-compose-manager'
+      - '.:/plugins/go/src/github.com/adyanth/traefik-container-manager'
       - './config_dev.yml:/etc/traefik/config.yml'
     environment:
       - TRAEFIK_PILOT_TOKEN=fc2fd759-11c9-4461-9bb5-978a790f4a45
