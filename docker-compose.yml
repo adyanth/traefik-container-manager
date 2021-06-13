@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  traefik:
+    image: traefik
+    entrypoint: sh -c "sed 's/$$TRAEFIK_PILOT_TOKEN/$TRAEFIK_PILOT_TOKEN/' /etc/traefik/traefik-template.yml > /etc/traefik/traefik.yml && traefik"
+    ports:
+      - "8000:80"
+      - "8080:8080"
+    volumes:
+      - './traefik_dev.yml:/etc/traefik/traefik-template.yml'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '.:/plugins/go/src/git.adyanth.site/adyanth/traefik-compose-manager'
+      - './config_dev.yml:/etc/traefik/config.yml'
+    environment:
+      - TRAEFIK_PILOT_TOKEN=fc2fd759-11c9-4461-9bb5-978a790f4a45
+    labels:
+    - traefik.enable=true
+    - traefik.http.services.traefik.loadbalancer.server.port=8080
+
+  manager:
+    build: traefik-compose-manager-service
+    image: adyanth/traefik-compose-manager-service
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+  whoami:
+    image: containous/whoami
+    labels: 
+    - traefik-manager-name=whoami

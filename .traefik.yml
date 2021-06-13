@@ -1,0 +1,8 @@
+displayName: Container Manager for Traefik
+type: middleware
+import: git.adyanth.site/adyanth/traefik-compose-manager
+summary: 'Traefik plugin to start/stop containers as needed'
+testData:
+  serviceUrl: http://manager:10000
+  name: whoami
+  timeout: 60

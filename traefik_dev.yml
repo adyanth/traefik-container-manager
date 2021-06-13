@@ -1,0 +1,20 @@
+pilot:
+  token: "fc2fd759-11c9-4461-9bb5-978a790f4a45"
+api:
+  dashboard: true
+  insecure: true
+experimental:
+  devPlugin:
+    goPath: /plugins/go
+    moduleName: git.adyanth.site/adyanth/traefik-compose-manager
+entryPoints:
+  http:
+    address: ":80"
+    forwardedHeaders:
+      insecure: true
+providers:
+  # docker:
+  #   exposedByDefault: false
+  file:
+    filename: "/etc/traefik/config.yml"
+    watch: true
