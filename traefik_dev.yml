@@ -6,7 +6,7 @@ api:
 experimental:
   devPlugin:
     goPath: /plugins/go
-    moduleName: git.adyanth.site/adyanth/traefik-compose-manager
+    moduleName: github.com/adyanth/traefik-docker-manager
 entryPoints:
   http:
     address: ":80"
