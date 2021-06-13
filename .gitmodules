@@ -1,0 +1,3 @@
+[submodule "traefik-compose-manager-service"]
+	path = traefik-compose-manager-service
+	url = https://git.adyanth.site/adyanth/traefik-compose-manager-service.git
