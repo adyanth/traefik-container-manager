@@ -88,7 +88,7 @@ func (e *Manager) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 func getServiceStatus(request string) (string, error) {
 
-	// This request wakes up the service if he's scaled to 0
+	// This request starts up the service if it is stopped
 	resp, err := netClient.Get(request)
 	if err != nil {
 		return "error", err
