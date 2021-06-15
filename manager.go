@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
 
-const defaultTimeoutSeconds = 60
+const defaultTimeoutSeconds = 60 * 5             // 5 minutes
+const defaultServiceUrl = "http://manager:10000" // Default URL is a container called manager serving on port 10000
 
 var netClient = &http.Client{
 	Timeout: time.Second * 2,
@@ -25,20 +27,23 @@ type Config struct {
 // CreateConfig creates a config with its default values
 func CreateConfig() *Config {
 	return &Config{
-		Timeout: defaultTimeoutSeconds,
+		ServiceUrl: defaultServiceUrl,
+		Timeout:    defaultTimeoutSeconds,
 	}
 }
 
 // Manager holds the request for the container
 type Manager struct {
-	name    string
-	next    http.Handler
-	request string
+	name       string
+	next       http.Handler
+	request    string
+	serviceUrl string
+	timeout    uint64
 }
 
-func buildRequest(url string, name string, timeout uint64) (string, error) {
+func buildRequest(baseUrl string, name string, timeout uint64, host, path string) (string, error) {
 	// TODO: Check url validity
-	request := fmt.Sprintf("%s?name=%s&timeout=%d", url, name, timeout)
+	request := fmt.Sprintf("%s?name=%s&timeout=%d&host=%s&path=%s", baseUrl, name, timeout, url.QueryEscape(host), url.QueryEscape(path))
 	fmt.Println(timeout)
 	return request, nil
 }
@@ -50,21 +55,27 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 		return nil, fmt.Errorf("name cannot be null")
 	}
 
-	request, err := buildRequest(config.ServiceUrl, config.Name, config.Timeout)
+	request, err := buildRequest(config.ServiceUrl, config.Name, config.Timeout, "", "")
 
 	if err != nil {
 		return nil, fmt.Errorf("error while building request")
 	}
 
 	return &Manager{
-		next:    next,
-		name:    name,
-		request: request,
+		next:       next,
+		name:       config.Name,
+		request:    request,
+		serviceUrl: config.ServiceUrl,
+		timeout:    config.Timeout,
 	}, nil
 }
 
 // ServeHTTP retrieve the service status
 func (e *Manager) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	if e.name == "generic-container-manager" {
+		e.request, _ = buildRequest(e.serviceUrl, e.name, e.timeout, req.URL.Host, req.URL.Path)
+		fmt.Println("Request set to ", e.request)
+	}
 	status, err := getServiceStatus(e.request)
 	for err == nil && status == "starting" {
 		status, err = getServiceStatus(e.request)
