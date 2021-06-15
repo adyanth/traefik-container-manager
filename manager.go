@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-const defaultTimeoutSeconds = 60 * 5             // 5 minutes
-const defaultServiceUrl = "http://manager:10000" // Default URL is a container called manager serving on port 10000
+const defaultTimeoutSeconds = 60 * 5                 // 5 minutes
+const defaultServiceUrl = "http://manager:10000/api" // Default URL is a container called manager serving on port 10000
 
 var netClient = &http.Client{
 	Timeout: time.Second * 2,
