@@ -1,4 +1,4 @@
-package traefik_compose_manager
+package traefik_container_manager
 
 import (
 	"context"

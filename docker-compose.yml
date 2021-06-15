@@ -18,8 +18,8 @@ services:
     - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   manager:
-    build: traefik-compose-manager-service
-    image: adyanth/traefik-compose-manager-service
+    build: traefik-container-manager-service
+    image: adyanth/traefik-container-manager-service
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
   whoami:
