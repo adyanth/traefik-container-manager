@@ -1,21 +1,27 @@
-http:
-  middlewares:
-    manager:
-      plugin:
-        dev:
-          serviceUrl: http://manager:10000
-          name: whoami
-          timeout: 10
-  services:
-    whoami:
-      loadBalancer:
-        servers:
-        - url: "http://whoami:80"
-  routers:
-    whoami:
-      rule: PathPrefix(`/whoami`)
-      entryPoints:
-        - "http"
-      middlewares:
-        - manager
-      service: "whoami"
+# http:
+#   middlewares:
+#     custom-404:
+#         errors:
+#           status:
+#             - "404"
+#           service: manager@docker
+#           query: "http://10.10.10.3:10000/manager"
+#     manager:
+#       plugin:
+#         dev:
+#           serviceUrl: http://manager:10000
+#           name: whoami
+#           timeout: 10
+#   services:
+#     whoami:
+#       loadBalancer:
+#         servers:
+#         - url: "http://whoami:80"
+#   routers:
+#     whoami:
+#       rule: PathPrefix(`/whoami`)
+#       entryPoints:
+#         - "http"
+#       middlewares:
+#         - manager
+#       service: "whoami"

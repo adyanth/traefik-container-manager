@@ -1,0 +1,23 @@
+api:
+  dashboard: true
+
+entrypoints:
+  web:
+    address: :80
+
+providers:
+  docker:
+    watch: true
+    exposedbydefault: false
+  file:
+    watch: true
+    directory: /etc/traefik/dynamic   # If needed
+
+pilot:
+  token: "XXXX"
+
+experimental:
+  plugins:
+    traefik-container-manager:
+      moduleName: "github.com/adyanth/traefik-container-manager"
+      version: "v0.0.4"

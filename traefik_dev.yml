@@ -8,13 +8,13 @@ experimental:
     goPath: /plugins/go
     moduleName: github.com/adyanth/traefik-container-manager
 entryPoints:
-  http:
+  entryhttp:
     address: ":80"
     forwardedHeaders:
       insecure: true
 providers:
-  # docker:
-  #   exposedByDefault: false
+  docker:
+    exposedByDefault: false
   file:
     filename: "/etc/traefik/config.yml"
     watch: true

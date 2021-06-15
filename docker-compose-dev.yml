@@ -1,23 +1,24 @@
 version: "3.7"
 services:
   traefik:
-    image: traefik:latest
-    restart: always
+    image: traefik
+    entrypoint: sh -c "sed 's/$$TRAEFIK_PILOT_TOKEN/$TRAEFIK_PILOT_TOKEN/' /etc/traefik/traefik-template.yml > /etc/traefik/traefik.yml && traefik"
     ports:
-      - "80:80"
-    environment:
-      - TZ=Asia/Kolkata
+      - "8000:80"
+      - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik.yml:/etc/traefik/traefik.yml
-      - ./config:/etc/traefik/dynamic/      # If needed
-    networks:
-      - default
-      - traefik-proxy
+      - './traefik_dev.yml:/etc/traefik/traefik-template.yml'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '.:/plugins/go/src/github.com/adyanth/traefik-container-manager'
+      - './config_dev.yml:/etc/traefik/config.yml'
+    environment:
+      - TRAEFIK_PILOT_TOKEN=fc2fd759-11c9-4461-9bb5-978a790f4a45
     labels:
-      - traefik.enable=true
+    - traefik.enable=true
+    - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   manager:
+    build: traefik-container-manager-service
     image: adyanth/traefik-container-manager-service
     expose: 
       - 10000
@@ -33,17 +34,22 @@ services:
       - traefik.http.middlewares.manager.errors.query=/
       - traefik.http.routers.manager.middlewares=manager-timeout
       - traefik.http.services.manager.loadbalancer.server.port=80
-      - traefik.http.middlewares.manager-timeout.plugin.traefik-container-manager.name=generic-container-manager
+      - traefik.http.middlewares.manager-timeout.plugin.dev.name=generic-container-manager
 
-  whoami:
+  # whoami:
+  #   image: containous/whoami
+  #   labels: 
+  #   - traefik-manager-name=whoami
+
+  whoami2:
     image: containous/whoami
     labels: 
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=entryhttp
       - traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)
       - traefik.http.routers.whoami.middlewares=whoami-timeout
-      - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.timeout=5
-      - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.name=whoami
+      - traefik.http.middlewares.whoami-timeout.plugin.dev.timeout=5
+      - traefik.http.middlewares.whoami-timeout.plugin.dev.name=whoami
       - traefik.http.services.whoami.loadbalancer.server.port=80
       - traefik-manager.name=whoami
       - traefik-manager.path=/whoami
