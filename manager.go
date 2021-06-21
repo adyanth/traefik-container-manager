@@ -73,7 +73,21 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 // ServeHTTP retrieve the service status
 func (e *Manager) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if e.name == "generic-container-manager" {
-		e.request, _ = buildRequest(e.serviceUrl, e.name, e.timeout, req.URL.Host, req.URL.Path)
+		fmt.Printf("Request object: %+v", req)
+		host := req.Host
+		if host == "" {
+			host = req.URL.Host
+		}
+		path := req.URL.Path
+		if strings.Contains(path, ".") {
+			if s := strings.Split(path, "/"); len(s) > 2 {
+				path = strings.Join(s[:len(s)-1], "")
+			} else {
+				e.next.ServeHTTP(rw, req)
+				return
+			}
+		}
+		e.request, _ = buildRequest(e.serviceUrl, e.name, e.timeout, host, path)
 		fmt.Println("Request set to ", e.request)
 	}
 	status, err := getServiceStatus(e.request)
