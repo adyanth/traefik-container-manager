@@ -90,9 +90,17 @@ func (e *Manager) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		e.request, _ = buildRequest(e.serviceUrl, e.name, e.timeout, host, path)
 		fmt.Println("Request set to ", e.request)
 	}
-	status, err := getServiceStatus(e.request)
-	for err == nil && status == "starting" {
-		status, err = getServiceStatus(e.request)
+
+	starting := false
+	var status string
+	var err error
+	for status, err = getServiceStatus(e.request); err == nil && status == "starting"; status, err = getServiceStatus(e.request) {
+		starting = true
+	}
+
+	if starting {
+		time.Sleep(1 * time.Second)
+		http.Redirect(rw, req, req.URL.Path, http.StatusTemporaryRedirect)
 	}
 
 	if err != nil {
