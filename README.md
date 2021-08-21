@@ -19,7 +19,7 @@ whoami:
       - traefik.http.services.whoami.loadbalancer.server.port=80
       - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.timeout=5
       - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.name=whoami
-      - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.serviceUrl=http://manager:10000/api     # Optiona
-      - traefik-manager.name=whoami
-      - traefik-manager.path=/whoami
+      - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.serviceUrl=http://manager:10000/api     # Optional
+      - traefik-container-manager.name=whoami
+      - traefik-container-manager.path=/whoami
 ```
