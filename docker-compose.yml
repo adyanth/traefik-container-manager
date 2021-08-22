@@ -22,7 +22,7 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
     labels: 
       - traefik.enable=true
-      - traefik.http.routers.manager.entrypoints=entryhttp
+      - traefik.http.routers.manager.entrypoints=web
       - traefik.http.routers.manager.rule=HostRegexp(`{host:.+}`)
       - traefik.http.routers.manager.priority=1
       - traefik.http.middlewares.manager.errors.status=404
@@ -30,17 +30,19 @@ services:
       - traefik.http.middlewares.manager.errors.query=/
       - traefik.http.routers.manager.middlewares=manager-timeout
       - traefik.http.services.manager.loadbalancer.server.port=80
-      - traefik.http.middlewares.manager-timeout.plugin.traefik-container-manager.name=generic-container-manager
+      - traefik.http.middlewares.manager-timeout.plugin.traefik-container-manager.Name=generic-container-manager
+      - traefik.http.middlewares.manager-timeout.plugin.traefik-container-manager.ServiceUrl=http://manager:10000/api
 
   whoami:
     image: containous/whoami
     labels: 
       - traefik.enable=true
-      - traefik.http.routers.whoami.entrypoints=entryhttp
+      - traefik.http.routers.whoami.entrypoints=web
       - traefik.http.routers.whoami.rule=Host(`whoami.adyanth.lan`) || PathPrefix(`/whoami`)
       - traefik.http.routers.whoami.middlewares=whoami-timeout
       - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.timeout=5
       - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.name=whoami
+      - traefik.http.middlewares.whoami-timeout.plugin.traefik-container-manager.ServiceUrl=http://manager:10000/api
       - traefik.http.services.whoami.loadbalancer.server.port=80
       - traefik-container-manager.name=whoami
       - traefik-container-manager.path=/whoami # Prefix matched to the incoming path.

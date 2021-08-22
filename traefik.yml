@@ -20,4 +20,4 @@ experimental:
   plugins:
     traefik-container-manager:
       moduleName: "github.com/adyanth/traefik-container-manager"
-      version: "v0.0.4"
+      version: "v0.1.2"
