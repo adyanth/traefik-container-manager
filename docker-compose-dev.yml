@@ -2,14 +2,13 @@ version: "3.7"
 services:
   traefik:
     image: traefik
-    entrypoint: sh -c "sed 's/$$TRAEFIK_PILOT_TOKEN/$TRAEFIK_PILOT_TOKEN/' /etc/traefik/traefik-template.yml > /etc/traefik/traefik.yml && traefik"
     ports:
       - "8000:80"
       - "8080:8080"
     volumes:
-      - './traefik_dev.yml:/etc/traefik/traefik-template.yml'
+      - './traefik_dev.yml:/etc/traefik/traefik.yml'
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - '.:/plugins/go/src/github.com/adyanth/traefik-container-manager'
+      - '.:/plugins-local/src/github.com/adyanth/traefik-container-manager'
       - './config_dev.yml:/etc/traefik/config.yml'
     environment:
       - TRAEFIK_PILOT_TOKEN=fc2fd759-11c9-4461-9bb5-978a790f4a45
@@ -34,22 +33,23 @@ services:
       - traefik.http.middlewares.container-manager.errors.query=/
       - traefik.http.routers.container-manager.middlewares=manager-timeout
       - traefik.http.services.container-manager.loadbalancer.server.port=80
-      - traefik.http.middlewares.manager-timeout.plugin.dev.name=generic-container-manager
+      - traefik.http.middlewares.manager-timeout.plugin.manager.name=generic-container-manager
 
   # whoami:
   #   image: containous/whoami
   #   labels: 
   #   - traefik-manager-name=whoami
 
-  whoami2:
+  whoami:
     image: containous/whoami
     labels: 
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=entryhttp
-      - traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)
+      - traefik.http.routers.whoami.rule=Host(`whoami.adyanth.lan`) || PathPrefix(`/whoami`)
       - traefik.http.routers.whoami.middlewares=whoami-timeout
-      - traefik.http.middlewares.whoami-timeout.plugin.dev.timeout=5
-      - traefik.http.middlewares.whoami-timeout.plugin.dev.name=whoami
+      - traefik.http.middlewares.whoami-timeout.plugin.manager.timeout=5
+      - traefik.http.middlewares.whoami-timeout.plugin.manager.name=whoami
       - traefik.http.services.whoami.loadbalancer.server.port=80
       - traefik-container-manager.name=whoami
-      - traefik-container-manager.path=/whoami
+      - traefik-container-manager.path=/whoami # Prefix matched to the incoming path.
+      - traefik-container-manager.host=whoami # Prefix matched to the incoming hostname. Can provide the subdomain or the complete fqdn.

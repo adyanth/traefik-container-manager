@@ -4,9 +4,9 @@ api:
   dashboard: true
   insecure: true
 experimental:
-  devPlugin:
-    goPath: /plugins/go
-    moduleName: github.com/adyanth/traefik-container-manager
+  localPlugins:
+    manager:
+      moduleName: github.com/adyanth/traefik-container-manager
 entryPoints:
   entryhttp:
     address: ":80"
